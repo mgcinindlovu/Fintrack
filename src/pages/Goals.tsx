@@ -1,12 +1,20 @@
 import React, { useState } from 'react';
-import { Card, Progress, Button, Row, Col, List, Typography, Layout } from 'antd';
+import { Card, Progress, Button, Row, Col, List, Typography, Layout, Modal, Input, Form } from 'antd';
 import styled from 'styled-components';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import Sidebar from '../Sidebar';
 
 const { Title, Text } = Typography;
 
-const goals = [
+// Type for goal object
+interface Goal {
+  name: string;
+  progress: number;
+  remainingBalance: string;
+  expectedCompletionDate: string;
+}
+
+const goalsInitialState: Goal[] = [
   {
     name: 'Emergency Fund',
     progress: 60,
@@ -50,9 +58,45 @@ const GoalsContainer = styled.div`
 
 const Goals = () => {
   const [collapsed, setCollapsed] = useState(false);
+  const [goals, setGoals] = useState<Goal[]>(goalsInitialState);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedGoal, setSelectedGoal] = useState<Goal | null>(null);
+  const [contributionAmount, setContributionAmount] = useState('');
 
   const toggle = () => {
     setCollapsed(!collapsed);
+  };
+
+  const handleUpdate = (goal: Goal) => {
+    setSelectedGoal(goal);
+    setIsModalVisible(true);
+  };
+
+  const handleContribute = (goal: Goal) => {
+    setSelectedGoal(goal);
+    setIsModalVisible(true);
+  };
+
+  const handleModalOk = () => {
+    if (selectedGoal && contributionAmount) {
+      const updatedGoals = goals.map((goal) =>
+        goal.name === selectedGoal.name
+          ? {
+              ...goal,
+              progress: Math.min(goal.progress + 10, 100), // Example: Increase progress by 10%
+              remainingBalance: `$${parseInt(goal.remainingBalance.replace('$', '')) - parseInt(contributionAmount)}`,
+            }
+          : goal
+      );
+      setGoals(updatedGoals);
+    }
+    setIsModalVisible(false);
+    setContributionAmount('');
+  };
+
+  const handleModalCancel = () => {
+    setIsModalVisible(false);
+    setContributionAmount('');
   };
 
   return (
@@ -66,11 +110,15 @@ const Goals = () => {
                 <List
                   itemLayout="horizontal"
                   dataSource={goals}
-                  renderItem={goal => (
+                  renderItem={(goal) => (
                     <List.Item
                       actions={[
-                        <Button type="primary">Update</Button>,
-                        <Button type="default">Contribute</Button>,
+                        <Button type="primary" onClick={() => handleUpdate(goal)}>
+                          Update
+                        </Button>,
+                        <Button type="default" onClick={() => handleContribute(goal)}>
+                          Contribute
+                        </Button>,
                       ]}
                     >
                       <List.Item.Meta
@@ -94,7 +142,7 @@ const Goals = () => {
                 <List
                   itemLayout="horizontal"
                   dataSource={recommendations}
-                  renderItem={recommendation => (
+                  renderItem={(recommendation) => (
                     <List.Item>
                       <List.Item.Meta
                         title={recommendation.name}
@@ -137,6 +185,24 @@ const Goals = () => {
           </Row>
         </GoalsContainer>
       </Layout>
+
+      <Modal
+        title={selectedGoal ? `Contribute to ${selectedGoal.name}` : 'Update Goal'}
+        visible={isModalVisible}
+        onOk={handleModalOk}
+        onCancel={handleModalCancel}
+      >
+        <Form>
+          <Form.Item label="Contribution Amount">
+            <Input
+              type="number"
+              value={contributionAmount}
+              onChange={(e) => setContributionAmount(e.target.value)}
+              placeholder="Enter amount"
+            />
+          </Form.Item>
+        </Form>
+      </Modal>
     </Layout>
   );
 };

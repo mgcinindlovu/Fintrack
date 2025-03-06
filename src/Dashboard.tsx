@@ -22,6 +22,7 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts';
 import Sidebar from './Sidebar';
+import 'country-flag-icons/3x2/flags.css'; // Import flag icons
 
 const { Header, Content } = Layout;
 const { Search } = Input;
@@ -37,10 +38,19 @@ const data = [
   { name: 'Jul', income: 3490, expenses: 4300, amt: 2100 },
 ];
 
-const currencyRates: { [key: string]: number } = {
-  USD: 1,
-  EUR: 0.85,
-  GBP: 0.75,
+// Comprehensive list of currencies with exchange rates (example rates)
+const currencyRates: { [key: string]: { rate: number; flag: string } } = {
+  USD: { rate: 1, flag: 'US' }, // United States Dollar
+  EUR: { rate: 0.85, flag: 'EU' }, // Euro
+  GBP: { rate: 0.75, flag: 'GB' }, // British Pound
+  ZWL: { rate: 322.23, flag: 'ZW' }, // Zimbabwean Dollar
+  JPY: { rate: 110.0, flag: 'JP' }, // Japanese Yen
+  AUD: { rate: 1.35, flag: 'AU' }, // Australian Dollar
+  CAD: { rate: 1.25, flag: 'CA' }, // Canadian Dollar
+  CHF: { rate: 0.92, flag: 'CH' }, // Swiss Franc
+  CNY: { rate: 6.45, flag: 'CN' }, // Chinese Yuan
+  INR: { rate: 75.0, flag: 'IN' }, // Indian Rupee
+  // Add more currencies as needed
 };
 
 const transactions = [
@@ -313,6 +323,8 @@ class Dashboard extends React.Component {
     collapsed: false,
     currency: 'USD',
     balance: 7890,
+    searchQuery: '',
+    filteredTransactions: transactions,
   };
 
   toggle = () => {
@@ -322,10 +334,23 @@ class Dashboard extends React.Component {
   };
 
   handleCurrencyChange = (value: string) => {
-    const newBalance = 7890 * currencyRates[value];
+    const newBalance = 7890 * currencyRates[value].rate;
     this.setState({
       currency: value,
       balance: newBalance,
+    });
+  };
+
+  handleSearch = (value: string) => {
+    const filtered = transactions.filter(transaction =>
+      transaction.name.toLowerCase().includes(value.toLowerCase()) ||
+      transaction.type.toLowerCase().includes(value.toLowerCase()) ||
+      transaction.status.toLowerCase().includes(value.toLowerCase()) ||
+      transaction.paymentMethod.toLowerCase().includes(value.toLowerCase())
+    );
+    this.setState({
+      searchQuery: value,
+      filteredTransactions: filtered,
     });
   };
 
@@ -361,7 +386,7 @@ class Dashboard extends React.Component {
               </ProfileContainer>
               <Search
                 placeholder="Search..."
-                onSearch={(value: string) => console.log(value)}
+                onSearch={this.handleSearch}
                 style={{ width: 200 }}
               />
             </HeaderContent>
@@ -409,9 +434,12 @@ class Dashboard extends React.Component {
                         defaultValue="USD"
                         onChange={(value) => this.handleCurrencyChange(value as string)}
                       >
-                        <Option value="USD">USD</Option>
-                        <Option value="EUR">EUR</Option>
-                        <Option value="GBP">GBP</Option>
+                        {Object.entries(currencyRates).map(([code, { flag }]) => (
+                          <Option key={code} value={code}>
+                            <span className={`fi fi-${flag.toLowerCase()}`} style={{ marginRight: 8 }} />
+                            {code}
+                          </Option>
+                        ))}
                       </CurrencySelect>
                     </FinanceCardHeader>
                     <FinanceCardContent>
@@ -512,7 +540,7 @@ class Dashboard extends React.Component {
                         Filter
                       </FilterText>
                     </TransactionsCardHeader>
-                    <Table columns={columns} dataSource={transactions} pagination={false} />
+                    <Table columns={columns} dataSource={this.state.filteredTransactions} pagination={false} />
                   </TransactionsCard>
                 </CardContainer>
               </Col>

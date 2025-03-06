@@ -14,6 +14,7 @@
     "@types/react-dom": "^19.0.4",
     "@types/styled-components": "^5.1.34",
     "antd": "^5.24.2",
+    "country-flag-icons": "^1.5.18",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.2.0",
