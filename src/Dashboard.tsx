@@ -1,5 +1,7 @@
 import React from 'react';
 import { Layout, Input, Card, Calendar, Select, Row, Col, Button, Progress, Dropdown, Menu as AntMenu, Table } from 'antd';
+import type { TableProps } from 'antd';
+import type { ColumnsType } from 'antd/es/table';
 import {
   MenuUnfoldOutlined,
   MenuFoldOutlined,
@@ -17,16 +19,29 @@ import {
   ApiOutlined,
 } from '@ant-design/icons';
 import styled from 'styled-components';
-import profilePic from './assets/Rectangle 68.jpg';
+
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts';
 import Sidebar from './Sidebar';
+import Header from './Header'
 import 'country-flag-icons/3x2/flags.css'; // Import flag icons
 
-const { Header, Content } = Layout;
+const { Content } = Layout;
 const { Search } = Input;
 const { Option } = Select;
+
+// Add TransactionType interface
+interface TransactionType {
+  key: string;
+  type: string;
+  name: string;
+  date: string;
+  amount: string;
+  status: string;
+  paymentMethod: string;
+  direction: string;
+}
 
 const data = [
   { name: 'Jan', income: 4000, expenses: 2400, amt: 2400 },
@@ -50,7 +65,6 @@ const currencyRates: { [key: string]: { rate: number; flag: string } } = {
   CHF: { rate: 0.92, flag: 'CH' }, // Swiss Franc
   CNY: { rate: 6.45, flag: 'CN' }, // Chinese Yuan
   INR: { rate: 75.0, flag: 'IN' }, // Indian Rupee
-  // Add more currencies as needed
 };
 
 const transactions = [
@@ -86,17 +100,17 @@ const transactions = [
   },
 ];
 
-const columns = [
+const columns: ColumnsType<TransactionType> = [
   {
     title: 'Type',
     dataIndex: 'type',
     key: 'type',
-    render: (text: string, record: any) => (
-      <div>
+    render: (text: string, record: TransactionType) => (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
         <div>{record.type === 'Income' ? <DollarOutlined /> : <CreditCardOutlined />}</div>
-        <div>{record.name}</div>
-        <div>{record.date}</div>
-        <div>{record.direction}</div>
+        <div style={{ fontSize: '14px' }}>{record.name}</div>
+        <div style={{ fontSize: '12px', color: '#666' }}>{record.date}</div>
+        <div style={{ fontSize: '12px' }}>{record.direction}</div>
       </div>
     ),
   },
@@ -104,22 +118,25 @@ const columns = [
     title: 'Amount',
     dataIndex: 'amount',
     key: 'amount',
+    responsive: ['md'],
   },
   {
     title: 'Status',
     dataIndex: 'status',
     key: 'status',
+    responsive: ['lg'],
   },
   {
     title: 'Payment Method',
     dataIndex: 'paymentMethod',
     key: 'paymentMethod',
+    responsive: ['lg'],
     render: (text: string) => (
-      <div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
         {text === 'Bank Transfer' && <BankOutlined />}
         {text === 'Credit Card' && <CreditCardIcon />}
         {text === 'PayPal' && <ApiOutlined />}
-        <span style={{ marginLeft: 8 }}>{text}</span>
+        <span>{text}</span>
       </div>
     ),
   },
@@ -129,29 +146,26 @@ const Logo = styled.div`
   height: 32px;
   margin: 16px;
   color: #008cff;
-`;
-
-const HeaderContent = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 24px;
-  background: #001529;
-`;
-
-const Trigger = styled.div`
-  padding: 0 24px;
-  cursor: pointer;
-  transition: color 0.3s;
+  @media (max-width: 576px) {
+    margin: 12px;
+    text-align: center;
+  }
 `;
 
 const SiteLayoutBackground = styled.div`
   background: #001529;
+  @media (max-width: 768px) {
+    padding: 12px;
+  }
 `;
 
 const ProfileContainer = styled.div`
   display: flex;
   align-items: center;
+  @media (max-width: 576px) {
+    flex-direction: column;
+    text-align: center;
+  }
 `;
 
 const ProfilePic = styled.img`
@@ -159,32 +173,73 @@ const ProfilePic = styled.img`
   width: 32px;
   border-radius: 50%;
   margin-left: 16px;
+  @media (max-width: 576px) {
+    margin: 8px auto;
+  }
 `;
 
 const WelcomeMessage = styled.div`
   margin-left: 16px;
   font-size: 16px;
   color: #fff;
+  @media (max-width: 576px) {
+    margin: 8px 0;
+    font-size: 14px;
+  }
 `;
 
 const CardContainer = styled.div`
   margin: 24px 0;
+  @media (max-width: 768px) {
+    margin: 12px 0;
+  }
+  @media (max-width: 576px) {
+    margin: 8px 0;
+  }
 `;
 
 const StyledCard = styled(Card)`
   background: #fff;
   color: #000;
+  @media (max-width: 768px) {
+    .ant-card-body {
+      padding: 12px;
+    }
+  }
+  @media (max-width: 576px) {
+    .ant-card-head {
+      padding: 0 12px;
+      min-height: 40px;
+      font-size: 14px;
+    }
+    .ant-card-head-title {
+      padding: 8px 0;
+    }
+    .ant-card-extra {
+      padding: 8px 0;
+    }
+  }
 `;
 
 const CardHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  @media (max-width: 576px) {
+    flex-direction: column;
+    gap: 8px;
+  }
 `;
 
 const CardTitle = styled.h1`
   margin: 0;
   color: #000;
+  @media (max-width: 768px) {
+    font-size: 20px;
+  }
+  @media (max-width: 576px) {
+    font-size: 18px;
+  }
 `;
 
 const CardDate = styled.div`
@@ -196,6 +251,10 @@ const CardContent = styled.div`
   display: flex;
   justify-content: space-between;
   margin-top: 16px;
+  @media (max-width: 576px) {
+    flex-direction: column;
+    gap: 12px;
+  }
 `;
 
 const CardItem = styled.div`
@@ -207,15 +266,33 @@ const CardItem = styled.div`
   }
   h2 {
     color: #000;
+    @media (max-width: 768px) {
+      font-size: 18px;
+    }
   }
   p {
     color: #000;
+    @media (max-width: 768px) {
+      font-size: 14px;
+    }
+  }
+  @media (max-width: 576px) {
+    border-right: none;
+    border-bottom: 1px solid #444;
+    padding-bottom: 12px;
+    &:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
   }
 `;
 
 const FinanceCard = styled(Card)`
   background: #fff;
   color: #000;
+  @media (max-width: 768px) {
+    margin-bottom: 16px;
+  }
 `;
 
 const FinanceCardHeader = styled.div`
@@ -237,6 +314,10 @@ const FinanceCardContent = styled.div`
   display: flex;
   justify-content: space-between;
   margin-top: 16px;
+  @media (max-width: 576px) {
+    flex-direction: column;
+    gap: 16px;
+  }
 `;
 
 const FinanceCardItem = styled.div`
@@ -252,17 +333,35 @@ const FinanceCardItem = styled.div`
   p {
     color: #000;
   }
+  @media (max-width: 576px) {
+    border-right: none;
+    border-bottom: 1px solid #444;
+    padding-bottom: 16px;
+    &:last-child {
+      border-bottom: none;
+    }
+  }
 `;
 
 const QuickActionsCard = styled(Card)`
   background: #fff;
   color: #000;
+  @media (max-width: 768px) {
+    margin-bottom: 16px;
+  }
 `;
 
 const QuickActionsCardHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  @media (max-width: 576px) {
+    flex-direction: column;
+    gap: 12px;
+    .ant-btn {
+      width: 100%;
+    }
+  }
 `;
 
 const QuickActionsCardTitle = styled.h1`
@@ -274,20 +373,33 @@ const QuickActionsCardContent = styled.div`
   display: flex;
   flex-direction: column;
   margin-top: 16px;
+  @media (max-width: 576px) {
+    margin-top: 12px;
+  }
 `;
 
 const QuickActionsButton = styled(Button)`
   margin-bottom: 16px;
+  @media (max-width: 576px) {
+    margin-bottom: 12px;
+    width: 100%;
+  }
 `;
 
 const GoalsContainer = styled.div`
   margin-top: 16px;
+  @media (max-width: 576px) {
+    margin-top: 12px;
+  }
 `;
 
 const GoalItem = styled.div`
   margin-bottom: 16px;
   display: flex;
   align-items: center;
+  @media (max-width: 576px) {
+    margin-bottom: 12px;
+  }
 `;
 
 const GoalIcon = styled.div`
@@ -299,6 +411,15 @@ const TransactionsCard = styled(Card)`
   background: #fff;
   color: #000;
   margin-top: 24px;
+  @media (max-width: 768px) {
+    margin-top: 16px;
+  }
+  @media (max-width: 576px) {
+    margin-top: 12px;
+    .ant-table {
+      font-size: 14px;
+    }
+  }
 `;
 
 const TransactionsCardHeader = styled.div`
@@ -316,6 +437,22 @@ const FilterText = styled.span`
   color: #000;
   display: flex;
   align-items: center;
+`;
+
+const StyledContent = styled(Content)`
+  margin: 16px;
+  padding: 24px;
+  min-height: 280px;
+
+  @media (max-width: 768px) {
+    margin: 12px;
+    padding: 16px;
+  }
+
+  @media (max-width: 576px) {
+    margin: 8px;
+    padding: 12px;
+  }
 `;
 
 class Dashboard extends React.Component {
@@ -372,180 +509,123 @@ class Dashboard extends React.Component {
     return (
       <Layout style={{ minHeight: '100vh' }}>
         <Sidebar collapsed={this.state.collapsed} toggle={this.toggle} />
+        <Header 
+          collapsed={this.state.collapsed}
+          onSearch={(query) => {
+            // Handle search functionality here
+            console.log('Search query:', query);
+          }}
+        />
         <Layout className="site-layout">
-          <Header className="site-layout-background" style={{ padding: 0 }}>
-            <Trigger onClick={this.toggle}>
-              {React.createElement(
-                this.state.collapsed ? MenuUnfoldOutlined : MenuFoldOutlined
-              )}
-            </Trigger>
-            <HeaderContent>
-              <ProfileContainer>
-                <ProfilePic src={profilePic} alt="Profile" />
-                <WelcomeMessage>Welcome back, Mgcini!</WelcomeMessage>
-              </ProfileContainer>
-              <Search
-                placeholder="Search..."
-                onSearch={this.handleSearch}
-                style={{ width: 200 }}
-              />
-            </HeaderContent>
-          </Header>
-          <Content
-            className="site-layout-background"
-            style={{
-              margin: '24px 16px',
-              padding: 24,
-              minHeight: 280,
-            }}
-          >
-            <Row gutter={16}>
-              <Col span={8}>
+          <StyledContent className="site-layout-background">
+            <Row gutter={[16, 16]}>
+              <Col xs={24} sm={24} md={8}>
                 <CardContainer>
-                  <StyledCard>
-                    <CardHeader>
-                      <CardTitle>Overview</CardTitle>
-                      <CardDate>{new Date().toLocaleDateString()}</CardDate>
-                    </CardHeader>
-                    <CardContent>
-                      <CardItem>
-                        <h2>Transactions</h2>
-                        <p>123</p>
-                      </CardItem>
-                      <CardItem>
-                        <h2>Income</h2>
-                        <p>$4567</p>
-                      </CardItem>
-                      <CardItem>
-                        <h2>Outcome</h2>
-                        <p>$1234</p>
-                      </CardItem>
-                    </CardContent>
-                    <Calendar fullscreen={false} />
+                  <StyledCard
+                    title="Income"
+                    extra={<Button icon={<DollarOutlined />} />}
+                  >
+                    <ResponsiveContainer width="100%" height={200}>
+                      <LineChart data={data}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" />
+                        <YAxis />
+                        <Tooltip />
+                        <Legend />
+                        <Line
+                          type="monotone"
+                          dataKey="income"
+                          stroke="#8884d8"
+                          activeDot={{ r: 8 }}
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
                   </StyledCard>
                 </CardContainer>
               </Col>
-              <Col span={8}>
+              <Col xs={24} sm={24} md={8}>
                 <CardContainer>
-                  <FinanceCard>
-                    <FinanceCardHeader>
-                      <FinanceCardTitle>Finance</FinanceCardTitle>
-                      <CurrencySelect
-                        defaultValue="USD"
-                        onChange={(value) => this.handleCurrencyChange(value as string)}
-                      >
-                        {Object.entries(currencyRates).map(([code, { flag }]) => (
-                          <Option key={code} value={code}>
-                            <span className={`fi fi-${flag.toLowerCase()}`} style={{ marginRight: 8 }} />
-                            {code}
-                          </Option>
-                        ))}
-                      </CurrencySelect>
-                    </FinanceCardHeader>
-                    <FinanceCardContent>
-                      <FinanceCardItem>
-                        <h2>Balance</h2>
-                        <p>
-                          {this.state.currency} {this.state.balance.toFixed(2)}
-                        </p>
-                      </FinanceCardItem>
-                    </FinanceCardContent>
-                    <FinanceCardContent>
-                      <FinanceCardItem>
-                        <h2>Finance Health</h2>
-                        <ResponsiveContainer width="100%" height={200}>
-                          <LineChart
-                            data={data}
-                            margin={{
-                              top: 5,
-                              right: 30,
-                              left: 20,
-                              bottom: 5,
-                            }}
-                          >
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="name" />
-                            <YAxis />
-                            <Tooltip />
-                            <Legend />
-                            <Line
-                              type="monotone"
-                              dataKey="income"
-                              stroke="#8884d8"
-                              activeDot={{ r: 8 }}
-                            />
-                            <Line
-                              type="monotone"
-                              dataKey="expenses"
-                              stroke="#82ca9d"
-                            />
-                          </LineChart>
-                        </ResponsiveContainer>
-                      </FinanceCardItem>
-                    </FinanceCardContent>
-                  </FinanceCard>
+                  <StyledCard
+                    title="Expenses"
+                    extra={<Button icon={<DollarOutlined />} />}
+                  >
+                    <ResponsiveContainer width="100%" height={200}>
+                      <LineChart data={data}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" />
+                        <YAxis />
+                        <Tooltip />
+                        <Legend />
+                        <Line
+                          type="monotone"
+                          dataKey="expenses"
+                          stroke="#82ca9d"
+                          activeDot={{ r: 8 }}
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </StyledCard>
                 </CardContainer>
               </Col>
-              <Col span={8}>
+              <Col xs={24} sm={24} md={8}>
                 <CardContainer>
-                  <QuickActionsCard>
-                    <QuickActionsCardHeader>
-                      <QuickActionsCardTitle>Quick Actions</QuickActionsCardTitle>
-                      <span style={{ color: '#000' }}>Manage</span>
-                    </QuickActionsCardHeader>
-                    <QuickActionsCardContent>
-                      <Dropdown overlay={sendMoneyMenu}>
-                        <QuickActionsButton type="primary" block>
-                          Send Money
-                        </QuickActionsButton>
-                      </Dropdown>
-                      <Dropdown overlay={requestMoneyMenu}>
-                        <QuickActionsButton type="primary" block>
-                          Request Money
-                        </QuickActionsButton>
-                      </Dropdown>
-                      <GoalsContainer>
-                        <GoalItem>
-                          <GoalIcon>
-                            <UserOutlined />
-                          </GoalIcon>
-                          <div>
-                            <h2 style={{ color: '#000' }}>Goal 1</h2>
-                            <Progress percent={50} />
-                          </div>
-                        </GoalItem>
-                        <GoalItem>
-                          <GoalIcon>
-                            <UserOutlined />
-                          </GoalIcon>
-                          <div>
-                            <h2 style={{ color: '#000' }}>Goal 2</h2>
-                            <Progress percent={75} />
-                          </div>
-                        </GoalItem>
-                      </GoalsContainer>
-                    </QuickActionsCardContent>
-                  </QuickActionsCard>
+                  <StyledCard title="Balance">
+                    <h2>${this.state.balance}</h2>
+                  </StyledCard>
                 </CardContainer>
               </Col>
             </Row>
-            <Row gutter={16}>
-              <Col span={24}>
-                <CardContainer>
-                  <TransactionsCard>
-                    <TransactionsCardHeader>
-                      <TransactionsCardTitle>Recent Transactions</TransactionsCardTitle>
-                      <FilterText>
-                        <FilterOutlined style={{ marginRight: 8 }} />
-                        Filter
-                      </FilterText>
-                    </TransactionsCardHeader>
-                    <Table columns={columns} dataSource={this.state.filteredTransactions} pagination={false} />
-                  </TransactionsCard>
-                </CardContainer>
+
+            <Row gutter={[16, 16]}>
+              <Col xs={24} sm={24} md={12}>
+                <FinanceCard>
+                  <FinanceCardHeader>
+                    <FinanceCardTitle>Quick Actions</FinanceCardTitle>
+                    <Dropdown overlay={sendMoneyMenu} trigger={['click']}>
+                      <Button icon={<CreditCardOutlined />}>Send Money</Button>
+                    </Dropdown>
+                  </FinanceCardHeader>
+                  <FinanceCardContent>
+                    <FinanceCardItem>
+                      <h2>USD</h2>
+                      <p>Cash Balance</p>
+                    </FinanceCardItem>
+                    <FinanceCardItem>
+                      <h2>EUR</h2>
+                      <p>Equity</p>
+                    </FinanceCardItem>
+                  </FinanceCardContent>
+                </FinanceCard>
+              </Col>
+              <Col xs={24} sm={24} md={12}>
+                <QuickActionsCard>
+                  <QuickActionsCardHeader>
+                    <QuickActionsCardTitle>Requests</QuickActionsCardTitle>
+                    <Dropdown overlay={requestMoneyMenu} trigger={['click']}>
+                      <Button icon={<CreditCardOutlined />}>Request Money</Button>
+                    </Dropdown>
+                  </QuickActionsCardHeader>
+                  <QuickActionsCardContent>
+                    <QuickActionsButton>Send</QuickActionsButton>
+                    <QuickActionsButton>Receive</QuickActionsButton>
+                  </QuickActionsCardContent>
+                </QuickActionsCard>
               </Col>
             </Row>
-          </Content>
+
+            <Row gutter={[16, 16]}>
+              <Col xs={24} sm={24} md={24} lg={12}>
+                <TransactionsCard title="Transactions">
+                  <Table
+                    dataSource={this.state.filteredTransactions}
+                    columns={columns}
+                    pagination={false}
+                    scroll={{ y: 240, x: true }}
+                  />
+                </TransactionsCard>
+              </Col>
+            </Row>
+          </StyledContent>
         </Layout>
       </Layout>
     );

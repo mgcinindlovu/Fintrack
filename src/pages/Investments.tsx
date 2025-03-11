@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Layout, Row, Col, Card, Statistic, Table, Tag, Button, Typography, Divider } from 'antd';
+import type { Breakpoint } from 'antd';
 import { DollarOutlined, BarChartOutlined, FundOutlined, LineChartOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import Sidebar from '../Sidebar';  // Assuming Sidebar is in the components folder
@@ -7,14 +8,84 @@ import Sidebar from '../Sidebar';  // Assuming Sidebar is in the components fold
 const { Content } = Layout;
 const { Title } = Typography;
 
+const StyledContent = styled(Content)`
+  padding: 24px;
+  min-height: 280px;
+  margin-top: 64px;
+
+  @media (max-width: 768px) {
+    padding: 16px;
+    margin-top: 56px;
+  }
+
+  @media (max-width: 576px) {
+    padding: 12px;
+  }
+`;
+
+const StyledTitle = styled(Title)`
+  &.ant-typography {
+    margin-bottom: 24px;
+    
+    @media (max-width: 768px) {
+      font-size: 24px !important;
+      margin-bottom: 16px;
+    }
+  }
+`;
+
 const PortfolioCard = styled(Card)`
   margin-bottom: 20px;
+  
+  .ant-card-body {
+    @media (max-width: 576px) {
+      padding: 16px;
+    }
+  }
+
+  .ant-statistic-content {
+    @media (max-width: 576px) {
+      font-size: 20px !important;
+    }
+  }
 `;
 
 const ChartWrapper = styled.div`
   height: 300px;
   background: #f5f5f5;
   margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  @media (max-width: 768px) {
+    height: 250px;
+  }
+
+  @media (max-width: 576px) {
+    height: 200px;
+  }
+`;
+
+const ResponsiveTable = styled(Table)`
+  .ant-table {
+    overflow-x: auto;
+  }
+
+  @media (max-width: 768px) {
+    .ant-table-cell {
+      padding: 8px !important;
+      font-size: 14px;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .ant-table-cell {
+      padding: 6px !important;
+      font-size: 13px;
+    }
+  }
 `;
 
 const Investments = () => {
@@ -70,20 +141,22 @@ const Investments = () => {
       title: 'Investment',
       dataIndex: 'name',
       key: 'name',
+      responsive: ['md' as Breakpoint],
     },
     {
       title: 'Type',
       dataIndex: 'type',
       key: 'type',
+      responsive: ['lg' as Breakpoint],
     },
     {
-      title: 'Amount Invested',
+      title: 'Amount',
       dataIndex: 'invested',
       key: 'invested',
       render: (text: number) => `$${text.toFixed(2)}`,
     },
     {
-      title: 'Current Value',
+      title: 'Value',
       dataIndex: 'currentValue',
       key: 'currentValue',
       render: (text: number) => `$${text.toFixed(2)}`,
@@ -93,19 +166,20 @@ const Investments = () => {
       dataIndex: 'performance',
       key: 'performance',
       render: (text: number) => `${text}%`,
+      responsive: ['sm' as Breakpoint],
     },
   ];
 
   return (
     <Layout>
       <Sidebar collapsed={collapsed} toggle={toggle} /> {/* Pass collapsed and toggle to Sidebar */}
-      <Content style={{ padding: '24px', minHeight: 280 }}>
-        <Title level={2}>My Investments</Title>
+      <StyledContent>
+        <StyledTitle level={2}>My Investments</StyledTitle>
 
         {/* Portfolio Overview */}
-        <Row gutter={16}>
-          <Col span={8}>
-            <PortfolioCard title="Total Portfolio Value" bordered>
+        <Row gutter={[16, 16]}>
+          <Col xs={24} sm={24} md={8}>
+            <PortfolioCard title="Total Portfolio Value">
               <Statistic
                 prefix={<DollarOutlined />}
                 value={totalValue}
@@ -115,16 +189,16 @@ const Investments = () => {
               />
             </PortfolioCard>
           </Col>
-          <Col span={8}>
-            <PortfolioCard title="Risk Level" bordered>
+          <Col xs={24} sm={12} md={8}>
+            <PortfolioCard title="Risk Level">
               <Tag color="geekblue">Medium</Tag>
             </PortfolioCard>
           </Col>
-          <Col span={8}>
-            <PortfolioCard title="Investment Performance" bordered>
+          <Col xs={24} sm={12} md={8}>
+            <PortfolioCard title="Performance">
               <Row justify="center" align="middle">
-                <Col span={12}>
-                  <BarChartOutlined style={{ fontSize: 48 }} />
+                <Col>
+                  <BarChartOutlined style={{ fontSize: 32 }} />
                   <Title level={4}>+8.2%</Title>
                 </Col>
               </Row>
@@ -133,15 +207,20 @@ const Investments = () => {
         </Row>
 
         {/* Investment Breakdown */}
-        <Title level={3}>Investment Breakdown</Title>
-        <Table columns={columns} dataSource={investments} pagination={false} />
+        <StyledTitle level={3}>Investment Breakdown</StyledTitle>
+        <ResponsiveTable 
+          columns={columns} 
+          dataSource={investments} 
+          pagination={false}
+          scroll={{ x: 'max-content' }}
+        />
 
         <Divider />
 
         {/* Investment Strategy Recommendations */}
-        <Row gutter={16}>
-          <Col span={12}>
-            <Card title="Suggested Investments" bordered>
+        <Row gutter={[16, 16]}>
+          <Col xs={24} md={12}>
+            <Card title="Suggested Investments">
               <ul>
                 <li>Consider diversifying your portfolio by adding bonds.</li>
                 <li>Look into adding international stocks to reduce risk.</li>
@@ -149,15 +228,16 @@ const Investments = () => {
               </ul>
             </Card>
           </Col>
-          <Col span={12}>
+          <Col xs={24} md={12}>
             <ChartWrapper>
-              {/* Placeholder for investment performance chart */}
-              <LineChartOutlined style={{ fontSize: 48, color: '#8c8c8c' }} />
-              <Title level={5} style={{ textAlign: 'center' }}>Portfolio Performance Chart</Title>
+              <LineChartOutlined style={{ fontSize: 32, color: '#8c8c8c' }} />
+              <Title level={5} style={{ textAlign: 'center', marginTop: 16 }}>
+                Portfolio Performance Chart
+              </Title>
             </ChartWrapper>
           </Col>
         </Row>
-      </Content>
+      </StyledContent>
     </Layout>
   );
 };

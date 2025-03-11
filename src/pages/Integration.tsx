@@ -1,9 +1,100 @@
 import React, { useState } from 'react';
 import { Layout, Typography, List, Button, Divider } from 'antd';
-import Sidebar from '../Sidebar'; // Adjust the path as needed
+import type { ListProps } from 'antd';
+import Sidebar from '../Sidebar';
+import styled from 'styled-components';
 
 const { Content } = Layout;
 const { Title } = Typography;
+
+const ContentWrapper = styled(Content)`
+  padding: 24px;
+  min-height: 280px;
+
+  @media (max-width: 768px) {
+    padding: 16px;
+  }
+
+  @media (max-width: 576px) {
+    padding: 12px;
+  }
+`;
+
+const StyledTitle = styled(Title)`
+  @media (max-width: 768px) {
+    font-size: 24px !important;
+  }
+
+  @media (max-width: 576px) {
+    font-size: 20px !important;
+  }
+`;
+
+const Section = styled.section`
+  margin-bottom: 24px;
+
+  @media (max-width: 768px) {
+    margin-bottom: 20px;
+  }
+
+  @media (max-width: 576px) {
+    margin-bottom: 16px;
+  }
+`;
+
+interface IntegrationItem {
+  name: string;
+  description: string;
+}
+
+const StyledList = styled(List<IntegrationItem>)`
+  .ant-list-item {
+    @media (max-width: 576px) {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 16px 12px;
+
+      strong {
+        margin-bottom: 8px;
+      }
+
+      p {
+        margin-bottom: 8px;
+      }
+
+      button {
+        width: 100%;
+      }
+    }
+  }
+`;
+
+const ButtonContainer = styled.div`
+  margin-top: 16px;
+
+  @media (max-width: 576px) {
+    button {
+      width: 100%;
+      margin-bottom: 12px;
+    }
+  }
+`;
+
+const integrationData: IntegrationItem[] = [
+  {
+    name: 'Payment Gateways',
+    description: 'Integrate with popular payment gateways like Stripe, PayPal, etc.',
+  },
+  {
+    name: 'CRM Systems',
+    description: 'Connect to CRM systems like Salesforce, HubSpot for syncing data.',
+  },
+  {
+    name: 'Email Marketing',
+    description: 'Integrate with email platforms such as Mailchimp, SendGrid, etc.',
+  },
+];
 
 const Integration = () => {
   const [collapsed, setCollapsed] = useState(false);
@@ -16,61 +107,58 @@ const Integration = () => {
     <Layout style={{ minHeight: '100vh' }}>
       <Sidebar collapsed={collapsed} toggle={toggle} />
       <Layout className="site-layout">
-        <Content style={{ padding: '24px', minHeight: 280 }}>
-          <Title level={2}>Integration Guide</Title>
+        <ContentWrapper>
+          <StyledTitle level={2}>Integration Guide</StyledTitle>
 
-          <section>
-            <Title level={3}>Available Integrations</Title>
-            <List
+          <Section>
+            <StyledTitle level={3}>Available Integrations</StyledTitle>
+            <StyledList
               bordered
-              dataSource={[
-                {
-                  name: 'Payment Gateways',
-                  description: 'Integrate with popular payment gateways like Stripe, PayPal, etc.',
-                },
-                {
-                  name: 'CRM Systems',
-                  description: 'Connect to CRM systems like Salesforce, HubSpot for syncing data.',
-                },
-                {
-                  name: 'Email Marketing',
-                  description: 'Integrate with email platforms such as Mailchimp, SendGrid, etc.',
-                },
-              ]}
-              renderItem={item => (
+              dataSource={integrationData}
+              renderItem={(item) => (
                 <List.Item>
-                  <strong>{item.name}</strong>
-                  <p>{item.description}</p>
-                  <Button type="link">Learn More</Button>
+                  <div>
+                    <strong>{item.name}</strong>
+                    <p>{item.description}</p>
+                    <Button type="link">Learn More</Button>
+                  </div>
                 </List.Item>
               )}
             />
 
             <Divider />
 
-            <Title level={3}>API Documentation</Title>
+            <StyledTitle level={3}>API Documentation</StyledTitle>
             <p>Access our API documentation to integrate with third-party services and extend your workflows.</p>
-            <Button type="primary">Go to API Docs</Button>
+            <ButtonContainer>
+              <Button type="primary">Go to API Docs</Button>
+            </ButtonContainer>
 
             <Divider />
 
-            <Title level={3}>Getting Started</Title>
+            <StyledTitle level={3}>Getting Started</StyledTitle>
             <p>Follow our step-by-step guide to set up your integrations easily.</p>
-            <Button type="primary">Start Now</Button>
+            <ButtonContainer>
+              <Button type="primary">Start Now</Button>
+            </ButtonContainer>
 
             <Divider />
 
-            <Title level={3}>Testing & Debugging</Title>
+            <StyledTitle level={3}>Testing & Debugging</StyledTitle>
             <p>Test your integrations in a sandbox environment and troubleshoot issues with our debugging tools.</p>
-            <Button type="primary">Go to Sandbox</Button>
+            <ButtonContainer>
+              <Button type="primary">Go to Sandbox</Button>
+            </ButtonContainer>
 
             <Divider />
 
-            <Title level={3}>Need Help?</Title>
+            <StyledTitle level={3}>Need Help?</StyledTitle>
             <p>If you're facing any issues or have questions, please reach out to our support team.</p>
-            <Button type="primary">Contact Support</Button>
-          </section>
-        </Content>
+            <ButtonContainer>
+              <Button type="primary">Contact Support</Button>
+            </ButtonContainer>
+          </Section>
+        </ContentWrapper>
       </Layout>
     </Layout>
   );

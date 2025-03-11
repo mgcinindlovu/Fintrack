@@ -3,6 +3,7 @@ import { Layout, Typography, Row, Col, Card, Statistic, Button } from 'antd';
 import Sidebar from '../Sidebar'; // Adjust the path as needed
 import { Link } from 'react-router-dom';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import styled from 'styled-components';
 
 const { Content } = Layout;
 const { Title } = Typography;
@@ -27,21 +28,21 @@ const AnalyticsAndReport = () => {
   return (
     <Layout>
       <Sidebar collapsed={collapsed} toggle={toggle} />
-      <Content style={{ padding: '24px', minHeight: 280 }}>
+      <ContentWrapper>
         <Title level={2}>Analytics and Reports</Title>
 
         <Row gutter={16}>
-          <Col span={8}>
+          <Col xs={24} sm={12} md={8} lg={6}>
             <Card>
               <Statistic title="Total Income" value="$10,000" />
             </Card>
           </Col>
-          <Col span={8}>
+          <Col xs={24} sm={12} md={8} lg={6}>
             <Card>
               <Statistic title="Total Expenses" value="$8,000" />
             </Card>
           </Col>
-          <Col span={8}>
+          <Col xs={24} sm={12} md={8} lg={6}>
             <Card>
               <Statistic title="Net Worth" value="$20,000" />
             </Card>
@@ -49,22 +50,80 @@ const AnalyticsAndReport = () => {
         </Row>
 
         <Title level={3}>Income vs. Expenses</Title>
-        <LineChart width={500} height={300} data={data}>
-          <XAxis dataKey="name" />
-          <YAxis />
-          <CartesianGrid strokeDasharray="3 3" />
-          <Tooltip />
-          <Legend />
-          <Line type="monotone" dataKey="income" stroke="#82ca9d" />
-          <Line type="monotone" dataKey="expense" stroke="#ff7300" />
-        </LineChart>
+        <LineChartWrapper>
+          <LineChart width={500} height={300} data={data}>
+            <XAxis dataKey="name" />
+            <YAxis />
+            <CartesianGrid strokeDasharray="3 3" />
+            <Tooltip />
+            <Legend />
+            <Line type="monotone" dataKey="income" stroke="#82ca9d" />
+            <Line type="monotone" dataKey="expense" stroke="#ff7300" />
+          </LineChart>
+        </LineChartWrapper>
 
-        <Button type="primary" style={{ marginTop: 20 }}>
-          <Link to="/generate-report">Generate Report</Link>
-        </Button>
-      </Content>
+        <ButtonWrapper>
+          <Button type="primary">
+            <Link to="/generate-report">Generate Report</Link>
+          </Button>
+        </ButtonWrapper>
+      </ContentWrapper>
     </Layout>
   );
 };
+
+// Styled Components for Responsiveness
+const ContentWrapper = styled(Content)`
+  padding: 24px;
+  min-height: 280px;
+
+  @media (max-width: 1200px) {
+    padding: 20px;
+  }
+
+  @media (max-width: 992px) {
+    padding: 18px;
+  }
+
+  @media (max-width: 768px) {
+    padding: 16px;
+  }
+
+  @media (max-width: 576px) {
+    padding: 12px;
+  }
+`;
+
+const LineChartWrapper = styled.div`
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+
+  @media (max-width: 768px) {
+    margin-top: 10px;
+    width: 100%;
+    justify-content: center;
+  }
+
+  @media (max-width: 576px) {
+    margin-top: 5px;
+    width: 100%;
+    justify-content: center;
+  }
+`;
+
+const ButtonWrapper = styled.div`
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+
+  @media (max-width: 768px) {
+    margin-top: 10px;
+  }
+
+  @media (max-width: 576px) {
+    margin-top: 5px;
+  }
+`;
 
 export default AnalyticsAndReport;

@@ -54,6 +54,58 @@ const GoalsContainer = styled.div`
   padding: 24px;
   min-height: 100vh;
   color: #fff;
+
+  @media (max-width: 768px) {
+    padding: 16px;
+  }
+
+  @media (max-width: 576px) {
+    padding: 12px;
+  }
+`;
+
+const StyledCard = styled(Card)`
+  margin-bottom: 16px;
+  
+  .ant-card-head-title {
+    @media (max-width: 576px) {
+      font-size: 16px;
+    }
+  }
+
+  .ant-list-item {
+    @media (max-width: 576px) {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+    }
+  }
+
+  .ant-list-item-meta {
+    @media (max-width: 576px) {
+      width: 100%;
+    }
+  }
+
+  .ant-list-item-action {
+    @media (max-width: 576px) {
+      width: 100%;
+      margin-left: 0;
+      
+      button {
+        width: 100%;
+        margin-bottom: 8px;
+      }
+    }
+  }
+`;
+
+const ChartCard = styled(Card)`
+  .recharts-responsive-container {
+    @media (max-width: 576px) {
+      height: 250px !important;
+    }
+  }
 `;
 
 const Goals = () => {
@@ -104,9 +156,9 @@ const Goals = () => {
       <Sidebar collapsed={collapsed} toggle={toggle} />
       <Layout className="site-layout">
         <GoalsContainer>
-          <Row gutter={16}>
-            <Col span={12}>
-              <Card title="Active Goals" bordered={false} style={{ marginBottom: 16 }}>
+          <Row gutter={[16, 16]}>
+            <Col xs={24} md={12}>
+              <StyledCard title="Active Goals" bordered={false}>
                 <List
                   itemLayout="horizontal"
                   dataSource={goals}
@@ -135,10 +187,10 @@ const Goals = () => {
                     </List.Item>
                   )}
                 />
-              </Card>
+              </StyledCard>
             </Col>
-            <Col span={12}>
-              <Card title="Goal Recommendations" bordered={false} style={{ marginBottom: 16 }}>
+            <Col xs={24} md={12}>
+              <StyledCard title="Goal Recommendations" bordered={false}>
                 <List
                   itemLayout="horizontal"
                   dataSource={recommendations}
@@ -151,23 +203,22 @@ const Goals = () => {
                     </List.Item>
                   )}
                 />
-              </Card>
-              <Card title="Savings Plan" bordered={false}>
+              </StyledCard>
+              <StyledCard title="Savings Plan" bordered={false}>
                 <Text>Here is a plan showing how you can achieve your financial goals.</Text>
-                {/* Add more details about the savings plan here */}
-              </Card>
+              </StyledCard>
             </Col>
           </Row>
-          <Row gutter={16}>
+          <Row gutter={[16, 16]}>
             <Col span={24}>
-              <Card title="Goal Insights" bordered={false}>
+              <ChartCard title="Goal Insights" bordered={false}>
                 <Title level={4}>Goal History</Title>
                 <ResponsiveContainer width="100%" height={300}>
                   <LineChart
                     data={goalHistoryData}
                     margin={{
                       top: 5,
-                      right: 30,
+                      right: 20,
                       left: 20,
                       bottom: 5,
                     }}
@@ -180,7 +231,7 @@ const Goals = () => {
                     <Line type="monotone" dataKey="progress" stroke="#8884d8" activeDot={{ r: 8 }} />
                   </LineChart>
                 </ResponsiveContainer>
-              </Card>
+              </ChartCard>
             </Col>
           </Row>
         </GoalsContainer>
@@ -191,8 +242,9 @@ const Goals = () => {
         visible={isModalVisible}
         onOk={handleModalOk}
         onCancel={handleModalCancel}
+        width={window.innerWidth < 576 ? "95%" : 520}
       >
-        <Form>
+        <Form layout={window.innerWidth < 576 ? "vertical" : "horizontal"}>
           <Form.Item label="Contribution Amount">
             <Input
               type="number"

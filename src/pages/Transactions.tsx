@@ -1,14 +1,76 @@
 import React, { useState } from 'react';
 import { Table, DatePicker, Select, Input, Pagination, Row, Col, Layout } from 'antd';
+import type { Breakpoint } from 'antd';
 import { BankOutlined, CreditCardOutlined as CreditCardIcon, ApiOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import Sidebar from '../Sidebar';
 
-
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 const { Search } = Input;
-const { Sider, Content } = Layout;
+const { Content } = Layout;
+
+const StyledContent = styled(Content)`
+  margin: 24px 16px;
+  padding: 24px;
+  background: #141414;
+  min-height: 280px;
+  margin-top: 64px;
+
+  @media (max-width: 768px) {
+    margin: 16px 12px;
+    padding: 16px;
+    margin-top: 56px;
+  }
+
+  @media (max-width: 576px) {
+    margin: 12px 8px;
+    padding: 12px;
+  }
+`;
+
+const FilterContainer = styled(Row)`
+  margin-bottom: 16px;
+  
+  .ant-col {
+    margin-bottom: 16px;
+  }
+
+  @media (max-width: 576px) {
+    .ant-picker {
+      width: 100%;
+    }
+  }
+`;
+
+const ResponsiveTable = styled(Table)`
+  .ant-table {
+    overflow-x: auto;
+  }
+
+  @media (max-width: 768px) {
+    .ant-table-cell {
+      padding: 8px !important;
+      font-size: 14px;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .ant-table-cell {
+      padding: 6px !important;
+      font-size: 13px;
+    }
+  }
+`;
+
+const StyledPagination = styled(Pagination)`
+  margin-top: 16px;
+  text-align: right;
+
+  @media (max-width: 576px) {
+    text-align: center;
+  }
+`;
 
 const transactions = [
   {
@@ -54,6 +116,7 @@ const columns = [
     title: 'Date',
     dataIndex: 'date',
     key: 'date',
+    responsive: ['md' as Breakpoint],
   },
   {
     title: 'Description',
@@ -64,6 +127,7 @@ const columns = [
     title: 'Category',
     dataIndex: 'category',
     key: 'category',
+    responsive: ['lg' as Breakpoint],
   },
   {
     title: 'Amount',
@@ -71,24 +135,21 @@ const columns = [
     key: 'amount',
   },
   {
-    title: 'Transaction Type',
+    title: 'Type',
     dataIndex: 'transactionType',
     key: 'transactionType',
+    responsive: ['sm' as Breakpoint],
   },
   {
-    title: 'Balance',
-    dataIndex: 'balance',
-    key: 'balance',
-  },
-  {
-    title: 'Payment Method',
+    title: 'Method',
     dataIndex: 'paymentMethod',
     key: 'paymentMethod',
+    responsive: ['md' as Breakpoint],
     render: (text: string) => (
       <div>
         {text === 'Bank Transfer' && <BankOutlined />}
         {text === 'Credit Card' && <CreditCardIcon />}
-        {text === 'PayPal' && <ApiOutlined />} {/* Using ApiOutlined as a placeholder */}
+        {text === 'PayPal' && <ApiOutlined />}
         <span style={{ marginLeft: 8 }}>{text}</span>
       </div>
     ),
@@ -97,20 +158,9 @@ const columns = [
     title: 'Status',
     dataIndex: 'status',
     key: 'status',
-  },
-  {
-    title: 'Reference Number',
-    dataIndex: 'referenceNumber',
-    key: 'referenceNumber',
+    responsive: ['lg' as Breakpoint],
   },
 ];
-
-const TransactionsContainer = styled.div`
-  background-color: #141414;
-  padding: 24px;
-  min-height: 100vh;
-  color: #fff;
-`;
 
 const Transactions = () => {
   const [filteredTransactions, setFilteredTransactions] = useState(transactions);
@@ -141,41 +191,56 @@ const Transactions = () => {
     setPageSize(pageSize || 5);
   };
 
-  const paginatedTransactions = filteredTransactions.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  const paginatedTransactions = filteredTransactions.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
-      <Sider trigger={null} collapsible collapsed={false}>
-        <Sidebar collapsed={false} toggle={() => {}} />
-      </Sider>
-      <Layout className="site-layout">
-        <Content style={{ margin: '24px 16px', padding: 24, background: '#141414', minHeight: 280 }}>
-          <TransactionsContainer>
-            <Row gutter={16}>
-              <Col span={8}>
-                <RangePicker onChange={handleDateRangeChange} />
-              </Col>
-              <Col span={8}>
-                <Select placeholder="Select Transaction Type" style={{ width: '100%' }}>
-                  <Option value="income">Income</Option>
-                  <Option value="expense">Expense</Option>
-                </Select>
-              </Col>
-              <Col span={8}>
-                <Search placeholder="Search transactions" onSearch={handleSearch} style={{ width: '100%' }} />
-              </Col>
-            </Row>
-            <Table columns={columns} dataSource={paginatedTransactions} pagination={false} style={{ marginTop: 16 }} />
-            <Pagination
-              current={currentPage}
-              pageSize={pageSize}
-              total={filteredTransactions.length}
-              onChange={handlePageChange}
-              style={{ marginTop: 16, textAlign: 'right' }}
+      <Sidebar collapsed={false} toggle={() => {}} />
+      <StyledContent>
+        <FilterContainer gutter={[16, 16]}>
+          <Col xs={24} sm={24} md={8}>
+            <RangePicker 
+              onChange={handleDateRangeChange}
+              style={{ width: '100%' }}
             />
-          </TransactionsContainer>
-        </Content>
-      </Layout>
+          </Col>
+          <Col xs={24} sm={12} md={8}>
+            <Select 
+              placeholder="Select Transaction Type" 
+              style={{ width: '100%' }}
+            >
+              <Option value="income">Income</Option>
+              <Option value="expense">Expense</Option>
+            </Select>
+          </Col>
+          <Col xs={24} sm={12} md={8}>
+            <Search 
+              placeholder="Search transactions" 
+              onSearch={handleSearch}
+              style={{ width: '100%' }}
+            />
+          </Col>
+        </FilterContainer>
+
+        <ResponsiveTable 
+          columns={columns} 
+          dataSource={paginatedTransactions} 
+          pagination={false}
+          scroll={{ x: 'max-content' }}
+        />
+
+        <StyledPagination
+          current={currentPage}
+          pageSize={pageSize}
+          total={filteredTransactions.length}
+          onChange={handlePageChange}
+          size="small"
+          responsive
+        />
+      </StyledContent>
     </Layout>
   );
 };

@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Dashboard from './Dashboard';
+
 import Transactions from './pages/Transactions';
 import Goals from './pages/Goals';
 import Investments from './pages/Investments';
